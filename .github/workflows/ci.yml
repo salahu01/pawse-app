@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      # Universal build + bundle assembly. Catches a missing icon, sound or broken plist,
+      # none of which `swift build` alone would notice.
+      - name: Build and assemble Pawse.app
+        run: ./tools/bundle.sh release
+
+      - name: Check the bundle is well formed
+        run: |
+          APP=build/Pawse.app
+          test -x "$APP/Contents/MacOS/Pawse"
+          test -f "$APP/Contents/Resources/AppIcon.icns"
+          test -f "$APP/Contents/Resources/kid_ask_0.wav"
+          plutil -lint "$APP/Contents/Info.plist"
+          lipo -archs "$APP/Contents/MacOS/Pawse" | grep -q x86_64
+          lipo -archs "$APP/Contents/MacOS/Pawse" | grep -q arm64
+          codesign --verify --strict --verbose=2 "$APP"
+          # deployment target must stay macOS 13 so Ventura users can run it
+          vtool -show-build "$APP/Contents/MacOS/Pawse" | grep -q "minos 13.0"
+
+      # Renders a pet offscreen: exercises SceneKit model building on a headless runner.
+      - name: Smoke test (offscreen pet render)
+        run: |
+          build/Pawse.app/Contents/MacOS/Pawse --render-pet kid happy /tmp/kid.png
+          test -s /tmp/kid.png
