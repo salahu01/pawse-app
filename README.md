@@ -9,6 +9,13 @@ and take breaks.**
 **[Download](https://github.com/salahu01/pawse-app/releases/latest)** ·
 **[Project board](https://github.com/users/salahu01/projects/4)**
 
+<a href="https://www.producthunt.com/products/pawse-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-pawse-2" target="_blank">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1270088&theme=dark">
+    <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1270088&theme=light" alt="Pawse on Product Hunt" width="250" height="54">
+  </picture>
+</a>
+
 Most reminder apps send a notification you swipe away without reading. Pawse sends a pet instead. It
 walks in from the edge of your screen, looks up at you and asks, *"Did you drink water?"*. Say yes and
 it bounces with joy. Say "not yet" and it gets a little sad and comes back later, asking more sweetly
