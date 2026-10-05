@@ -77,7 +77,7 @@ never what you typed or which apps you used.
 ```bash
 git clone https://github.com/salahu01/pawse-app.git && cd pawse-app
 ./tools/bundle.sh          # -> build/Pawse.app (universal, ad-hoc signed)
-./tools/make-dmg.sh        # -> build/Pawse-1.0.0.dmg
+./tools/make-dmg.sh        # -> build/Pawse-1.0.1.dmg
 ```
 
 For a distributable build, sign with a Developer ID and notarise:

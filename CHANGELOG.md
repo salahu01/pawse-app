@@ -2,7 +2,7 @@
 
 All notable changes to Pawse are documented here. This project follows [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [1.0.1] — 2026-10-05
 ### Changed
 - Open at login is now on by default (set once on first launch from /Applications) and can be toggled from the menu bar menu as well as Settings.
 
