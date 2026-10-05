@@ -4,7 +4,7 @@ import ServiceManagement
 struct SettingsView: View {
     @ObservedObject var store: Store
     let preview: () -> Void
-    @State private var openAtLogin = SMAppService.mainApp.status == .enabled
+    @State private var openAtLogin = LoginItem.isOn
     @State private var loginError: String?
 
     var body: some View {
@@ -79,14 +79,11 @@ struct SettingsView: View {
             Section("General") {
                 Toggle("Open \(AppInfo.name) at login", isOn: $openAtLogin)
                     .onChange(of: openAtLogin) { on in
-                        do {
-                            if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
-                            loginError = nil
-                        } catch {
-                            loginError = error.localizedDescription
-                            openAtLogin = SMAppService.mainApp.status == .enabled
-                        }
+                        guard on != LoginItem.isOn else { return }
+                        loginError = LoginItem.set(on)?.localizedDescription
+                        openAtLogin = LoginItem.isOn
                     }
+                    .onAppear { openAtLogin = LoginItem.isOn }
                 if let e = loginError { Text(e).font(.caption).foregroundStyle(.red) }
                 Button("Custom sounds folder…") { NSWorkspace.shared.open(SoundFX.customDir) }
             }

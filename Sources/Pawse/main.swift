@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 import SceneKit
+import ServiceManagement
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let store = Store.shared
@@ -35,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 if yes { BreakScreen.shared.start(minutes: self.screen.breakLength, locked: self.screen.hardBlockBreaks) } else { self.screen.snooze() }
             }
         }
+        LoginItem.enableOnFirstRun()
         screen.onBreakDue = { [weak self] in self?.check() }
         screen.start()
 
@@ -160,6 +162,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(item("Call \(store.species.shortName) now", #selector(summon), "p"))
         menu.addItem(item(store.paused ? "Resume reminders" : "Pause reminders", #selector(togglePause), ""))
         menu.addItem(.separator())
+        let login = item("Open at Login", #selector(toggleLogin), "")
+        login.state = LoginItem.isOn ? .on : .off
+        menu.addItem(login)
         menu.addItem(item("Settings…", #selector(openSettings), ","))
         menu.addItem(item("Quit \(AppInfo.name)", #selector(quit), "q"))
     }
@@ -171,6 +176,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let i = NSMenuItem(title: s, action: sel, keyEquivalent: key); i.target = self; return i
     }
 
+    @objc private func toggleLogin() { LoginItem.set(!LoginItem.isOn) }
     @objc private func logDrink() { store.drink(); scheduleNext() }
     @objc private func undoDrink() { store.undo() }
     @objc private func logHabit(_ sender: NSMenuItem) {
@@ -214,3 +220,26 @@ let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.accessory)
 app.run()
+
+/// Launch-at-login via SMAppService (macOS 13+).
+enum LoginItem {
+    static var isOn: Bool { SMAppService.mainApp.status == .enabled }
+
+    @discardableResult
+    static func set(_ on: Bool) -> Error? {
+        do {
+            if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+            return nil
+        } catch { return error }
+    }
+
+    /// A reminder app is only useful if it's running, so turn this on once on first run.
+    /// Skipped for dev builds outside /Applications so `swift run` doesn't register a login item.
+    static func enableOnFirstRun() {
+        let key = "loginItemConfigured"
+        guard !UserDefaults.standard.bool(forKey: key),
+              Bundle.main.bundlePath.hasPrefix("/Applications") else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        if !isOn { set(true) }
+    }
+}
