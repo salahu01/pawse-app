@@ -110,6 +110,12 @@ The GitHub release workflow does the same when the signing secrets are set (see
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and dev flags.
 
+## Support Pawse
+
+Pawse is free and always will be. If it helps you drink more water or take better breaks,
+you can support development on [GitHub Sponsors](https://github.com/sponsors/salahu01). Stars
+and bug reports help too.
+
 ## Credits and licence
 
 Code: MIT, see [LICENSE](LICENSE). Bundled sounds keep their own licences (CC0, public domain,
